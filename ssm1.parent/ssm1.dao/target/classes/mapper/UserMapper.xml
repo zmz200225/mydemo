@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zb.mapper.UserMapper">
+    <select id="findUserLogin" resultType="com.zb.entity.User">
+        select * from `auctionuser` where userName=#{user} and userPassword = #{pwd}
+    </select>
+
+    <insert id="insertUser" parameterType="com.zb.entity.User">
+         insert into `auctionuser` value (null,#{userName},#{userPassword},#{userCardNO},#{userTel},#{userAddress},#{userPostNumber},0,null,null)
+    </insert>
+</mapper>  

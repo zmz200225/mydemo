@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zb.mapper.AuctionMapper">
+
+    <sql id="where_sql">
+        <if test="auctionName!=null and auctionName!=''">
+            and auctionName like concat('%',#{auctionName},'%')
+        </if>
+        <if test="auctionDesc!=null and auctionDesc!=''">
+            and auctionDesc like concat('%',#{auctionDesc},'%')
+        </if>
+        <if test="auctionStartTime!=null and auctionStartTime!=''">
+            and auctionStartTime like concat('%',#{auctionStartTime},'%')
+        </if>
+        <if test="auctionEndTime!=null and auctionEndTime!=''">
+            and auctionEndTime like concat('%',#{auctionEndTime},'%')
+        </if>
+        <if test="auctionStartPrice!=null and auctionStartPrice!=''">
+            and auctionStartPrice = #{auctionStartPrice}
+        </if>
+    </sql>
+
+    <select id="findAuctionPage" resultType="com.zb.entity.Auction" parameterType="map">
+        select * from `auction` where 1=1
+        <include refid="where_sql"></include>
+        limit #{start},#{size}
+    </select>
+
+    <select id="findAuctionCount" parameterType="map" resultType="int">
+        select count(*) from `auction` where 1=1
+        <include refid="where_sql"></include>
+    </select>
+
+    <insert id="insertAuction" parameterType="com.zb.entity.Auction">
+         INSERT INTO `auction` VALUE(NULL,#{auctionName},#{auctionStartPrice},#{auctionUpset},#{auctionStartTime},#{auctionEndTime},#{auctionPic},#{auctionDesc})
+    </insert>
+
+    <delete id="deleteAuction" parameterType="int">
+        delete from `auction` where auctionId = #{id}
+    </delete>
+
+    <select id="findAuctionById" resultType="com.zb.entity.Auction">
+        select * from `auction` where auctionId = #{id}
+    </select>
+
+    <update id="updateAuction" parameterType="com.zb.entity.Auction">
+        UPDATE `auction` SET
+        auctionName=#{auctionName},auctionStartPrice=#{auctionStartPrice},auctionUpset=#{auctionUpset},
+        auctionStartTime=#{auctionStartTime},auctionEndTime=#{auctionEndTime}
+        <if test="auctionPic!=null and auctionPic!=''">
+            ,auctionPic=#{auctionPic}
+        </if>
+        ,auctionDesc=#{auctionDesc} WHERE auctionId=#{auctionId}
+    </update>
+
+
+    <select id="startAuctionList" resultType="com.zb.entity.Auction">
+        SELECT * FROM `auction` WHERE auctionEndTime > NOW()
+    </select>
+</mapper>

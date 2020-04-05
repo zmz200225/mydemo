@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zb.mapper.AuctionRecordMapper">
+
+    <resultMap id="AuctionRecordResultMap" type="com.zb.entity.AuctionRecord">
+        <id property="id" column="id"></id>
+        <association property="user" javaType="com.zb.entity.User">
+            <id column="userId" property="userId"></id>
+        </association>
+        <association property="auction" javaType="com.zb.entity.Auction">
+            <id column="auctionId" property="auctionId"></id>
+        </association>
+    </resultMap>
+
+    <resultMap id="AuctionRecordResultMap1" type="com.zb.entity.AuctionRecord">
+        <id property="id" column="id"></id>
+        <association property="user" javaType="com.zb.entity.User">
+            <id column="userId" property="userId"></id>
+        </association>
+    </resultMap>
+
+
+    <select id="findAuctionRecord" resultMap="AuctionRecordResultMap">
+      SELECT r.*,u.`userName` FROM `auctionrecord` r,`auctionuser` u WHERE r.`userId`=u.`userId` AND auctionId =#{aid} ORDER BY r.auctionPrice DESC LIMIT 0,4
+    </select>
+
+    <select id="findMaxPrice" resultType="int">
+            SELECT IFNULL(MAX(auctionPrice),-1) FROM auctionrecord WHERE auctionId = #{aid}
+    </select>
+
+    <insert id="insertAuctionRecord" parameterType="com.zb.entity.AuctionRecord">
+        insert into auctionrecord value (null,#{user.userId},#{auction.auctionId},now(),#{auctionPrice})
+    </insert>
+    <!--  &lt 表示 <  -->
+    <select id="findEndList" resultMap="AuctionRecordResultMap">
+        SELECT * FROM (SELECT
+        r.id,r.auctionId,a.auctionName,a.auctionStartPrice,a.auctionStartTime,a.auctionEndTime,r.auctionPrice,u.userName,u.userId
+        FROM `auction` a,`auctionrecord` r,`auctionuser` u
+        WHERE a.auctionEndTime &lt; NOW() AND a.auctionId=r.auctionId AND r.userId = u.`userId`
+        ORDER BY auctionPrice DESC ) b GROUP BY auctionId ORDER BY auctionEndTime LIMIT 4
+    </select>
+
+    <select id="findAuctionByAid" resultMap="AuctionRecordResultMap1">
+      SELECT r.*,u.userName FROM `auctionrecord` r,`auctionuser` u WHERE r.auctionId = #{aid} AND r.userId = u.userId ORDER BY auctionPrice DESC LIMIT 3
+    </select>
+</mapper>  
